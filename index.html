@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Where's Wally Game</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    #game-area {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background-size: cover;
+      overflow: hidden;
+      border: 1px solid black;
+    }
+    .character {
+      position: absolute;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-dark text-white text-center py-4">
+    <h1>Where's Wally Game</h1>
+  </header>
+
+  <div class="container mt-5 text-center">
+    <input type="text" id="player-name" class="form-control" placeholder="Enter your name" required>
+    <button id="start-button" class="btn btn-primary mt-3">Start Game</button>
+    <div id="game-area" class="mt-4"></div>
+    <div id="high-scores" class="mt-4"></div>
+  </div>
+
+  <script type="text/babel">
+    // Global variables
+    const levels = 5;
+    const initialPeopleCount = 50;
+    const maxPeopleCount = 200;
+    let currentLevel = 1;
+    let startTime;
+
+    // Function to load JSON data from server
+    async function loadJson(url) {
+      const response = await fetch(url);
+      return response.json();
+    }
+
+    // Function to load high scores from the server
+    async function loadHighScores() {
+      const response = await fetch('/highscores');
+      const scores = await response.json();
+      const highScoresDiv = document.getElementById('high-scores');
+      highScoresDiv.innerHTML = '<h3>High Scores</h3>';
+      scores.forEach((score, index) => {
+        highScoresDiv.innerHTML += `<p>${index + 1}. ${score.name}: ${score.time} seconds</p>`;
+      });
+    }
+
+    // Function to randomly position an element within the game area
+    function getRandomPosition(maxWidth, maxHeight, elementWidth, elementHeight) {
+      const x = Math.random() * (maxWidth - elementWidth);
+      const y = Math.random() * (maxHeight - elementHeight);
+      return { x, y };
+    }
+
+    // Function to start the game
+    async function startGame() {
+      const playerName = document.getElementById('player-name').value;
+      if (!playerName) {
+        alert('Please enter your name to start the game.');
+        return;
+      }
+
+      document.getElementById('start-button').disabled = true;
+      startTime = new Date();
+
+      // Load background images
+      const backgroundImages = await loadJson('/images/backgrounds');
+
+      // Load character images
+      const peopleImages = await loadJson('/images/people');
+
+      // Start the first level
+      nextLevel(backgroundImages, peopleImages, playerName);
+    }
+
+    // Function to start the next level
+    async function nextLevel(backgroundImages, peopleImages, playerName) {
+      if (currentLevel > levels) {
+        endGame(playerName);
+        return;
+      }
+
+      // Clear previous characters
+      const gameArea = document.getElementById('game-area');
+      gameArea.innerHTML = '';
+
+      // Randomly select a background
+      const selectedBackground = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+      gameArea.style.backgroundImage = `url('/images/backgrounds/${selectedBackground}')`;
+
+      // Set size scaling factor based on the level
+      const scale = 1 - (currentLevel - 1) * 0.1;
+
+      // Get game area dimensions
+      const gameAreaWidth = gameArea.offsetWidth;
+      const gameAreaHeight = gameArea.offsetHeight;
+
+      // Calculate the number of people to display
+      const peopleCount = initialPeopleCount + Math.floor((maxPeopleCount - initialPeopleCount) * (currentLevel - 1) / (levels - 1));
+
+      // Randomly place characters
+      for (let i = 0; i < peopleCount; i++) {
+        const img = document.createElement('img');
+        img.src = `/images/people/${peopleImages[Math.floor(Math.random() * peopleImages.length)]}`;
+        img.className = 'character';
+        img.style.width = `${50 * scale}px`; // Adjust width based on level
+        img.style.height = `${50 * scale}px`; // Adjust height based on level
+
+        const position = getRandomPosition(gameAreaWidth, gameAreaHeight, 50 * scale, 50 * scale);
+        img.style.left = `${position.x}px`;
+        img.style.top = `${position.y}px`;
+
+        gameArea.appendChild(img);
+      }
+
+      // Add Wally
+      const wally = document.createElement('img');
+      wally.src = '/images/wally.png';
+      wally.className = 'character';
+      wally.style.width = `${50 * scale}px`; // Adjust width based on level
+      wally.style.height = `${50 * scale}px`; // Adjust height based on level
+
+      const wallyPosition = getRandomPosition(gameAreaWidth, gameAreaHeight, 50 * scale, 50 * scale);
+      wally.style.left = `${wallyPosition.x}px`;
+      wally.style.top = `${wallyPosition.y}px`;
+
+      wally.addEventListener('click', () => {
+        alert('You found Wally!');
+        currentLevel++;
+        nextLevel(backgroundImages, peopleImages, playerName);
+      });
+
+      gameArea.appendChild(wally);
+    }
+
+    // Function to end the game
+    async function endGame(playerName) {
+      const endTime = new Date();
+      const timeTaken = (endTime - startTime) / 1000;
+
+      // Save the score
+      await fetch('/highscores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: playerName, time: timeTaken })
+      });
+
+      // Show the final message and reset the game
+      alert(`Congratulations, ${playerName}! You completed the game in ${timeTaken} seconds.`);
+      loadHighScores();
+      document.getElementById('start-button').disabled = false;
+      currentLevel = 1;
+    }
+
+    document.getElementById('start-button').addEventListener('click', startGame);
+    window.onload = loadHighScores;
+  </script>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</body>
+</html>
