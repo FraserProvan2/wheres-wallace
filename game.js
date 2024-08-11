@@ -9,16 +9,22 @@ let timerInterval;
 let backgroundIndex = 0;
 
 const stageLabels = [
-  "1: Echoes of a Peaceful Past - Wallace in a busy market before the chaos.",
-  "2: Highland Refuge - Wallace in a remote highland village, beginning the fight.",
-  "3: Stirling Bridge - Wallace’s daring tactics at Stirling Bridge.",
-  "4: Falkirk's Fury - Wallace faces overwhelming odds at Falkirk.",
-  "5: The Final Stand - Wallace’s last epic battle for freedom."
+  "1: Echoes of a Peaceful Past - Wallace in a busy market before the chaos",
+  "2: Highland Refuge - Wallace in a remote highland village, beginning the fight",
+  "3: Stirling Bridge - Wallace’s daring tactics at Stirling Bridge",
+  "4: Falkirk's Fury - Wallace faces overwhelming odds at Falkirk",
+  "5: The Final Stand - Wallace’s last epic battle for freedom"
 ];
 
 function loadHighScores() {
   const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   const highScoresDiv = document.getElementById('high-scores');
+  
+  if (highScores.length === 0) {
+    highScoresDiv.innerHTML = '';
+    return;
+  }
+
   highScoresDiv.innerHTML = '<h3>High Scores</h3>';
   highScores.slice(0, 5).forEach((score, index) => {
     highScoresDiv.innerHTML += `<p>${index + 1}. ${score.name}: ${score.time} seconds</p>`;
@@ -82,7 +88,7 @@ function nextLevel(backgroundImages, peopleImages, playerName) {
 
   resetGameArea();
   setupBackground(backgroundImages);
-  setupCharacters(peopleImages, backgroundImages, playerName);
+  setupPeople(peopleImages, backgroundImages, playerName);
   setupProgressBar();
   updateStageLabel();
   startTimer(playerName);
@@ -102,7 +108,7 @@ function setupBackground(backgroundImages) {
   gameArea.style.backgroundImage = `url('./images/backgrounds/${selectedBackground}')`;
 }
 
-function setupCharacters(peopleImages, backgroundImages, playerName) {
+function setupPeople(peopleImages, backgroundImages, playerName) {
   const scale = 1 - (currentLevel - 1) * 0.1;
   const gameArea = document.getElementById('game-area');
   const gameAreaWidth = gameArea.offsetWidth;
@@ -117,7 +123,7 @@ function setupCharacters(peopleImages, backgroundImages, playerName) {
   for (let i = 0; i < peopleCount; i++) {
     createCharacter(peopleImages, gameAreaWidth, gameAreaHeight, scale);
   }
-  
+
   createWallace(gameAreaWidth, gameAreaHeight, scale, backgroundImages, peopleImages, playerName);
 }
 
