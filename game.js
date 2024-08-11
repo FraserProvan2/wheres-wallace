@@ -159,6 +159,9 @@ function createWallace(gameAreaWidth, gameAreaHeight, scale, backgroundImages, p
   wallace.style.left = `${wallacePosition.x}px`;
   wallace.style.top = `${wallacePosition.y}px`;
 
+  const directions = ['scaleX(1)', 'scaleX(-1)'];
+  wallace.style.transform = directions[Math.floor(Math.random() * directions.length)];
+
   wallace.addEventListener('click', () => {
     highlightWallace(wallace, true);
     setTimeout(() => {
