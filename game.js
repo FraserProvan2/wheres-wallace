@@ -47,9 +47,11 @@ function startGame() {
 
 function loadAssetsAndStartLevel(playerName) {
   const backgroundImages = [
-    'battleback1.png',
-    'battleback2.png',
-    'battleback3.png'
+    '1.png',
+    '2.png',
+    '3.png',
+    '4.png',
+    '5.png'
   ];
   const peopleImages = [
     'person1.png',
