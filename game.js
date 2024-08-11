@@ -1,13 +1,12 @@
 const levels = 5;
 const initialPeopleCount = 50;
 const maxPeopleCount = 200;
-const timeLimit = 8; // seconds
+const timeLimit = 8;
 const base_scaling = 75;
 let currentLevel = 1;
 let startTime;
 let timerInterval;
 
-// Function to load high scores from local storage
 function loadHighScores() {
   const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   const highScoresDiv = document.getElementById('high-scores');
@@ -17,16 +16,15 @@ function loadHighScores() {
   });
 }
 
-// Function to save a new high score to local storage
 function saveHighScore(newScore) {
   const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
   highScores.push(newScore);
-  highScores.sort((a, b) => a.time - b.time); // Sort scores by time
+  highScores.sort((a, b) => a.time - b.time);
   localStorage.setItem('highScores', JSON.stringify(highScores));
 }
 
 function getRandomPosition(maxWidth, maxHeight, elementWidth, elementHeight) {
-  const restrictedTopMargin = maxHeight * 0.1; // Avoid top 10% of the screen
+  const restrictedTopMargin = maxHeight * 0.1;
   const x = Math.random() * (maxWidth - elementWidth);
   const y = Math.random() * (maxHeight - restrictedTopMargin - elementHeight) + restrictedTopMargin;
   return { x, y };
@@ -52,19 +50,15 @@ function loadAssetsAndStartLevel(playerName) {
     'battleback1.png',
     'battleback2.png',
     'battleback3.png'
-    // 'battleback4.png',
-    // 'battleback5.png',
-    // 'battleback6.png',
-    // 'battleback7.png'
-  ]; // Add all your background image names here
+  ];
   const peopleImages = [
-    'person1.png', 
+    'person1.png',
     'person2.png',
     'person3.png',
     'person4.png',
     'person5.png',
     'person6.png'
-  ]; // Add all your people image names here
+  ];
 
   nextLevel(backgroundImages, peopleImages, playerName);
 }
@@ -102,7 +96,7 @@ function setupCharacters(peopleImages, backgroundImages, playerName) {
   let peopleCount = initialPeopleCount + Math.floor((maxPeopleCount - initialPeopleCount) * (currentLevel - 1) / (levels - 1));
 
   if (currentLevel === levels) {
-    peopleCount *= 20; // 20 times more characters in the final level
+    peopleCount *= 20;
   }
 
   for (let i = 0; i < peopleCount; i++) {
@@ -129,7 +123,7 @@ function createCharacter(peopleImages, gameAreaWidth, gameAreaHeight, scale) {
 function createWallace(gameAreaWidth, gameAreaHeight, scale, backgroundImages, peopleImages, playerName) {
   const wallace = document.createElement('img');
   wallace.src = './images/william_wallace.png';
-  wallace.className = 'character';
+  wallace.className = 'character wallace';
   wallace.style.width = `${base_scaling * scale}px`;
   wallace.style.height = `${base_scaling * scale}px`;
 
@@ -138,10 +132,13 @@ function createWallace(gameAreaWidth, gameAreaHeight, scale, backgroundImages, p
   wallace.style.top = `${wallacePosition.y}px`;
 
   wallace.addEventListener('click', () => {
-    alert('You found Wallace!');
-    clearInterval(timerInterval);
-    currentLevel++;
-    nextLevel(backgroundImages, peopleImages, playerName);
+    highlightWallace(wallace, true);
+    setTimeout(() => {
+      alert('You found Wallace!');
+      clearInterval(timerInterval);
+      currentLevel++;
+      nextLevel(backgroundImages, peopleImages, playerName);
+    }, 100);
   });
 
   document.getElementById('game-area').appendChild(wallace);
@@ -155,15 +152,29 @@ function setupProgressBar() {
 function startTimer(playerName) {
   let elapsedTime = 0;
   const progressBar = document.getElementById('progress');
+  const currentLimit = currentLevel === levels ? timeLimit * 2 : timeLimit;
   timerInterval = setInterval(() => {
     elapsedTime += 0.1;
-    progressBar.style.width = `${(elapsedTime / timeLimit) * 100}%`;
-    if (elapsedTime >= timeLimit) {
+    progressBar.style.width = `${(elapsedTime / currentLimit) * 100}%`;
+    if (elapsedTime >= currentLimit) {
       clearInterval(timerInterval);
-      alert('Time\'s up! You lost.');
-      resetGame(playerName);
+      const wallace = document.querySelector('#game-area .wallace');
+      highlightWallace(wallace, false);
+      setTimeout(() => {
+        alert('Time\'s up! You lost.');
+        resetGame(playerName);
+      }, 100);
     }
   }, 100);
+}
+
+function highlightWallace(wallace, found) {
+  if (wallace) {
+    wallace.style.outline = found ? '3px solid green' : '3px solid red';
+    wallace.style.boxShadow = found ? '0 0 10px green' : '0 0 10px red';
+    wallace.style.backgroundColor = found ? 'rgba(0, 255, 0, 0.5)' : 'rgba(255, 0, 0, 0.5)';
+    wallace.style.zIndex = 1000;
+  }
 }
 
 function resetGame(playerName) {

@@ -25,6 +25,7 @@ header {
 .character {
   position: absolute;
   cursor: pointer;
+  box-sizing: content-box;
 }
 
 .title-logo {
