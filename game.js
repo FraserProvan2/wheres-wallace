@@ -2,7 +2,7 @@ const levels = 5;
 const initialPeopleCount = 50;
 const maxPeopleCount = 200;
 const timeLimit = 8; // seconds
-const base_scaling = 65;
+const base_scaling = 75;
 let currentLevel = 1;
 let startTime;
 let timerInterval;
@@ -50,8 +50,8 @@ function startGame() {
 function loadAssetsAndStartLevel(playerName) {
   const backgroundImages = [
     'battleback1.png',
-    // 'battleback2.png',
-    // 'battleback3.png',
+    'battleback2.png',
+    'battleback3.png'
     // 'battleback4.png',
     // 'battleback5.png',
     // 'battleback6.png',
