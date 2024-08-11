@@ -18,11 +18,15 @@
       position: absolute;
       cursor: pointer;
     }
+
+    .title-logo {
+      max-width: 75px;
+    }
   </style>
 </head>
 <body>
-  <header class="bg-dark text-white text-center py-4">
-    <h1>Where's Wally Game</h1>
+  <header class="bg-light text-center py-4">
+    <h1>Where's Willy<small class="text-muted">(am Wallace)</small><img class="title-logo" src='/images/william_wallace.png' alt="" srcset=""></h1>
   </header>
 
   <div class="container mt-5 text-center">
@@ -127,7 +131,7 @@
 
       // Add Wally
       const wally = document.createElement('img');
-      wally.src = '/images/wally.png';
+      wally.src = '/images/william_wallace.png';
       wally.className = 'character';
       wally.style.width = `${50 * scale}px`; // Adjust width based on level
       wally.style.height = `${50 * scale}px`; // Adjust height based on level
