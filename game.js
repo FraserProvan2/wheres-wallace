@@ -6,6 +6,15 @@ const base_scaling = 75;
 let currentLevel = 1;
 let startTime;
 let timerInterval;
+let backgroundIndex = 0;
+
+const stageLabels = [
+  "1: Echoes of a Peaceful Past - Wallace in a busy market before the chaos.",
+  "2: Highland Refuge - Wallace in a remote highland village, beginning the fight.",
+  "3: Stirling Bridge - Wallace’s daring tactics at Stirling Bridge.",
+  "4: Falkirk's Fury - Wallace faces overwhelming odds at Falkirk.",
+  "5: The Final Stand - Wallace’s last epic battle for freedom."
+];
 
 function loadHighScores() {
   const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
@@ -75,16 +84,20 @@ function nextLevel(backgroundImages, peopleImages, playerName) {
   setupBackground(backgroundImages);
   setupCharacters(peopleImages, backgroundImages, playerName);
   setupProgressBar();
+  updateStageLabel();
   startTimer(playerName);
 }
 
 function resetGameArea() {
   const gameArea = document.getElementById('game-area');
-  gameArea.innerHTML = '<div id="progress-bar"><div id="progress"></div></div>';
+  gameArea.innerHTML = '<div id="progress-bar"><div id="progress"></div></div><div id="stage-label"></div>';
 }
 
 function setupBackground(backgroundImages) {
-  const selectedBackground = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+  if (backgroundIndex >= backgroundImages.length) {
+    backgroundIndex = 0;
+  }
+  const selectedBackground = backgroundImages[backgroundIndex++];
   const gameArea = document.getElementById('game-area');
   gameArea.style.backgroundImage = `url('./images/backgrounds/${selectedBackground}')`;
 }
@@ -110,7 +123,14 @@ function setupCharacters(peopleImages, backgroundImages, playerName) {
 
 function createCharacter(peopleImages, gameAreaWidth, gameAreaHeight, scale) {
   const img = document.createElement('img');
-  img.src = `./images/people/${peopleImages[Math.floor(Math.random() * peopleImages.length)]}`;
+  
+  let availablePeopleImages = peopleImages.slice(0, 4);
+
+  if (currentLevel >= 3) {
+    availablePeopleImages = peopleImages.slice(0, 6);
+  }
+  
+  img.src = `./images/people/${availablePeopleImages[Math.floor(Math.random() * availablePeopleImages.length)]}`;
   img.className = 'character';
   img.style.width = `${base_scaling * scale}px`;
   img.style.height = `${base_scaling * scale}px`;
@@ -179,11 +199,21 @@ function highlightWallace(wallace, found) {
   }
 }
 
+function updateStageLabel() {
+  const stageLabel = document.getElementById('stage-label');
+  if (currentLevel <= stageLabels.length) {
+    stageLabel.textContent = stageLabels[currentLevel - 1];
+  } else {
+    stageLabel.textContent = 'Congratulations!';
+  }
+}
+
 function resetGame(playerName) {
   document.getElementById('game-area').style.display = 'none';
   document.querySelector('.container').style.display = 'block';
   document.getElementById('start-button').disabled = false;
   currentLevel = 1;
+  backgroundIndex = 0;
   loadHighScores();
 }
 
