@@ -1,0 +1,52 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling */
+  height: 100%; /* Ensure full height */
+}
+
+header {
+  height: 10vh; /* Set the header height */
+  min-height: 80px; /* Minimum height to avoid collapsing */
+}
+
+#game-area {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 10vh); /* Full viewport height minus header */
+  background-size: cover; /* Ensure background covers the entire area */
+  background-position: bottom center; /* Prioritize the bottom of the image */
+  overflow: hidden;
+  border: 1px solid black;
+  display: none;
+}
+
+.character {
+  position: absolute;
+  cursor: pointer;
+}
+
+.title-logo {
+  max-width: 75px;
+}
+
+#player-name {
+  max-width: 250px;
+}
+
+#progress-bar {
+  width: 100%;
+  height: 5px;
+  background-color: #ddd;
+}
+
+#progress {
+  height: 100%;
+  width: 0;
+  background-color: #28a745;
+}
+
+.container {
+  padding-top: 20px;
+}
