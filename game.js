@@ -2,6 +2,7 @@ const levels = 5;
 const initialPeopleCount = 50;
 const maxPeopleCount = 200;
 const timeLimit = 8; // seconds
+const base_scaling = 65;
 let currentLevel = 1;
 let startTime;
 let timerInterval;
@@ -49,17 +50,20 @@ function startGame() {
 function loadAssetsAndStartLevel(playerName) {
   const backgroundImages = [
     'battleback1.png',
-    'battleback2.png',
-    'battleback3.png',
-    'battleback4.png',
-    'battleback5.png',
-    'battleback6.png',
-    'battleback7.png'
+    // 'battleback2.png',
+    // 'battleback3.png',
+    // 'battleback4.png',
+    // 'battleback5.png',
+    // 'battleback6.png',
+    // 'battleback7.png'
   ]; // Add all your background image names here
   const peopleImages = [
     'person1.png', 
-    // 'person2.png', 
-    // 'person3.png'
+    'person2.png',
+    'person3.png',
+    'person4.png',
+    'person5.png',
+    'person6.png'
   ]; // Add all your people image names here
 
   nextLevel(backgroundImages, peopleImages, playerName);
@@ -112,10 +116,10 @@ function createCharacter(peopleImages, gameAreaWidth, gameAreaHeight, scale) {
   const img = document.createElement('img');
   img.src = `./images/people/${peopleImages[Math.floor(Math.random() * peopleImages.length)]}`;
   img.className = 'character';
-  img.style.width = `${50 * scale}px`;
-  img.style.height = `${50 * scale}px`;
+  img.style.width = `${base_scaling * scale}px`;
+  img.style.height = `${base_scaling * scale}px`;
 
-  const position = getRandomPosition(gameAreaWidth, gameAreaHeight, 50 * scale, 50 * scale);
+  const position = getRandomPosition(gameAreaWidth, gameAreaHeight, base_scaling * scale, base_scaling * scale);
   img.style.left = `${position.x}px`;
   img.style.top = `${position.y}px`;
 
@@ -126,10 +130,10 @@ function createWallace(gameAreaWidth, gameAreaHeight, scale, backgroundImages, p
   const wallace = document.createElement('img');
   wallace.src = './images/william_wallace.png';
   wallace.className = 'character';
-  wallace.style.width = `${50 * scale}px`;
-  wallace.style.height = `${50 * scale}px`;
+  wallace.style.width = `${base_scaling * scale}px`;
+  wallace.style.height = `${base_scaling * scale}px`;
 
-  const wallacePosition = getRandomPosition(gameAreaWidth, gameAreaHeight, 50 * scale, 50 * scale);
+  const wallacePosition = getRandomPosition(gameAreaWidth, gameAreaHeight, base_scaling * scale, base_scaling * scale);
   wallace.style.left = `${wallacePosition.x}px`;
   wallace.style.top = `${wallacePosition.y}px`;
 
